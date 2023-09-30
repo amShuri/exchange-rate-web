@@ -1,0 +1,27 @@
+{
+  "name": "exchange-rate-web",
+  "version": "1.0.0",
+  "description": "Exchange rate web app built using HTML, CSS & JS.",
+  "main": "index.js",
+  "scripts": {
+    "server": "http-server",
+    "cypress": "cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amShuri/exchange-rate-web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amShuri/exchange-rate-web/issues"
+  },
+  "homepage": "https://github.com/amShuri/exchange-rate-web#readme",
+  "dependencies": {
+    "bootstrap": "^5.3.2",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "cypress": "^13.3.0"
+  }
+}
