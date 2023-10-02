@@ -9,11 +9,136 @@
       crossorigin="anonymous"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <title>Exchange Rate Web</title>
   </head>
   <body>
-    <h2>Currency Converter</h2>
-    <h2>Exchange Rate Lookup</h2>
+    <main>
+      <div class="container py-3">
+        <header class="border-bottom pb-3 mb-4">
+          <div class="d-flex align-items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="38"
+              height="30"
+              fill="currentColor"
+              class="bi bi-graph-up"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"
+              />
+            </svg>
+            <h2 class="fs-4 fw-normal m-0">Currency Exchange Rate</h2>
+          </div>
+        </header>
+
+        <section class="bg-light rounded-3 p-4 mb-4">
+          <h2>Currency Converter</h2>
+
+          <div class="row mb-2">
+            <div class="col">
+              <label for="amount-to-convert" class="form-label">Enter Amount</label>
+              <input
+                class="form-control py-2"
+                type="number"
+                id="amount-to-convert"
+                placeholder="100"
+                required
+              />
+            </div>
+
+            <div class="col">
+              <label for="currency-base" class="form-label">Convert From</label>
+              <select class="form-select py-2" id="currency-base">
+                <option value="" disabled selected hidden>Select Currency</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+
+            <div class="col">
+              <label for="currency-target" class="form-label">Convert To</label>
+              <select class="form-select py-2" id="currency-target">
+                <option value="" disabled selected hidden>Select Currency</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col py-0 mb-2">
+              <p class="fs-5 m-0" id="conversion-result">0 EUR = 0 USD</p>
+              <p class="fst-italic form-text m-0">
+                Last update:
+                <time id="conversion-update-time">dd/mm/yyyy</time>
+              </p>
+            </div>
+
+            <div class="col" id="button-container">
+              <button
+                class="btn btn-primary btn-lg"
+                id="convert-currency-btn"
+                type="button"
+              >
+                Convert
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-dark rounded-3 text-white p-4">
+          <h2>Exchange Rates</h2>
+
+          <div class="row">
+            <div class="col">
+              <label class="visually-hidden" for="exchange-base-select"
+                >Choose a currency from the list</label
+              >
+              <select class="form-select py-2" id="exchange-base-select">
+                <option value="" disabled selected hidden>Select Currency</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row my-2">
+            <div class="col py-0" id="table-container">
+              <table class="table table-hover table-dark">
+                <thead>
+                  <tr>
+                    <th class="bg-primary" scope="col">Currency</th>
+                    <th class="bg-primary" scope="col">Exchange</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <th scope="row">ARS</th>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">BRL</th>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">EUR</th>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">USD</th>
+                    <td>-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p class="fst-italic form-text text-white m-0">
+            Last update:
+            <time id="exchange-update-time">dd/mm/yyyy</time>
+          </p>
+        </section>
+      </div>
+    </main>
+    <script src="src/index.js"></script>
   </body>
 </html>
