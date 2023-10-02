@@ -1,0 +1,32 @@
+.col {
+  padding: 0.5rem;
+}
+
+#button-container {
+  display: flex;
+  justify-content: end;
+}
+
+#table-container {
+  overflow-y: auto;
+  max-height: 330px;
+}
+
+#exchange-base-select {
+  max-width: 300px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+}
+
+@media screen and (max-width: 770px) {
+  .row {
+    display: block;
+  }
+
+  #convert-currency-btn {
+    width: 100%;
+  }
+}
