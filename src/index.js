@@ -1,103 +1,115 @@
-const $amountToConvert = document.querySelector('#amount-to-convert');
-const $currencyBase = document.querySelector('#currency-base');
-const $currencyTarget = document.querySelector('#currency-target');
+const $apiUpdateTime = document.querySelector('#update-time');
 
-const $conversionResult = document.querySelector('#conversion-result');
-const $conversionUpdate = document.querySelector('#conversion-update-time');
-const $exchangeBase = document.querySelector('#exchange-base-select');
-const $exchangeUpdate = document.querySelector('#exchange-update-time');
+document.addEventListener('DOMContentLoaded', populateSelectElements);
 
-const $tableBody = document.querySelector('tbody');
+document.querySelector('#convert-button').addEventListener('click', () => {
+  const currencyBase = getValue('#currency-base');
+  const currencyTarget = getValue('#currency-target');
+  const conversionAmount = getValue('#conversion-amount');
+  const $result = document.querySelector('#result');
 
-document.querySelector('#convert-currency-btn').onclick = () => {
-  const currencyBase = $currencyBase.value;
-  const currencyTarget = $currencyTarget.value;
-  const amountToConvert = $amountToConvert.value;
+  // Need validations for this functionality to work properly
+  hideElement('#convert-button');
+  showElement('#loading-button');
 
-  // These messages will be shown while getting the data from the API.
-  showLoadingMessage($conversionResult, 'Converting...');
-  showLoadingMessage($conversionUpdate, 'getting date...');
+  getCurrencyConversion(conversionAmount, currencyBase, currencyTarget)
+    .then((conversion) => {
+      $result.textContent = `${conversionAmount} ${currencyBase} = 
+      ${conversion.rates[currencyTarget]} ${currencyTarget}`;
 
-  getConversionResult(currencyBase, currencyTarget, amountToConvert)
-    .then((result) => {
-      $conversionResult.textContent = `${amountToConvert} ${currencyBase} =
-      ${result.conversion_result} ${currencyTarget}`;
-
-      $conversionUpdate.textContent = simplifyUpdateTime(result.time_last_update_utc);
+      $apiUpdateTime.textContent = conversion.date;
+      hideElement('#loading-button');
+      showElement('#convert-button');
     })
     .catch((error) => {
       console.log(error);
     });
-};
+});
 
-document.querySelector('#exchange-base-select').onchange = (e) => {
+document.querySelector('#exchange-rates').addEventListener('change', (e) => {
+  const $tableBody = document.querySelector('tbody');
   const exchangeBase = e.target.value;
+
   $tableBody.textContent = '';
+  showElement('#loading-indicator');
 
   getCurrencyExchange(exchangeBase)
     .then((exchange) => {
-      Object.keys(exchange.conversion_rates).forEach((currencyCode) => {
-        const $tableRow = document.createElement('tr');
-        const $tableHeader = document.createElement('th');
-        const $tableData = document.createElement('td');
+      Object.keys(exchange.rates).forEach((key) => {
+        $tableBody.insertAdjacentHTML(
+          'beforeend',
+          `<tr>
+            <th scope="row">${key}</th>
+            <td>${exchange.rates[key]}</td>
+           </tr>`
+        );
 
-        $tableHeader.scope = 'row';
-        $tableHeader.textContent = currencyCode;
-        $tableData.textContent = exchange.conversion_rates[currencyCode];
-
-        $tableBody.appendChild($tableRow);
-        $tableRow.append($tableHeader, $tableData);
+        $currencyUpdateTime.textContent = exchange.date;
+        hideElement('#loading-indicator');
       });
-
-      $exchangeUpdate.textContent = simplifyUpdateTime(exchange.time_last_update_utc);
     })
     .catch((error) => {
       console.log(error);
     });
-};
+});
 
-function getCurrencyExchange(base) {
-  const url = getApiUrl(`latest/${base}`);
-  return fetch(url).then((response) => response.json());
+function getCurrencyExchange(currencyBase) {
+  const URL = getApiUrl(`/latest?from=${currencyBase}`);
+  return fetch(URL).then((response) => response.json());
 }
 
-function getConversionResult(base, target, amount) {
-  const url = getApiUrl(`pair/${base}/${target}/${amount}`);
-  return fetch(url).then((response) => response.json());
+function getCurrencyConversion(conversionAmount, currencyBase, currencyTarget) {
+  const URL = getApiUrl(
+    `/latest?amount=${conversionAmount}&from=${currencyBase}&to=${currencyTarget}`
+  );
+  return fetch(URL).then((response) => response.json());
 }
 
 function getApiUrl(endpoint) {
-  return `https://v6.exchangerate-api.com/v6/KEY-HERE/${endpoint}`;
+  return 'https://api.frankfurter.app' + endpoint;
 }
 
-function createCurrencyOptions() {
-  const url = getApiUrl('codes');
-  fetch(url)
-    .then((response) => response.json())
-    .then((currencyData) => {
-      currencyData.supported_codes.forEach((supportedCode) => {
-        const $currencyOption = document.createElement('option');
+function getValue($element) {
+  return document.querySelector($element).value;
+}
 
-        $currencyOption.value = supportedCode[0];
-        $currencyOption.textContent = `${supportedCode[0]} - ${supportedCode[1]}`;
+function showElement($element) {
+  const $elementToShow = document.querySelector($element);
+  $elementToShow.classList.remove('visually-hidden');
+}
 
-        $currencyBase.appendChild($currencyOption);
-        $currencyTarget.appendChild($currencyOption.cloneNode(true));
-        $exchangeBase.appendChild($currencyOption.cloneNode(true));
+function hideElement($element) {
+  const $elementToHide = document.querySelector($element);
+  $elementToHide.classList.add('visually-hidden');
+}
+
+function populateSelectElements() {
+  const URL = getApiUrl('/currencies');
+  const chachedExchangeRates = sessionStorage.getItem('exchangeRates');
+
+  if (chachedExchangeRates) {
+    const exchangeRates = JSON.parse(chachedExchangeRates);
+    createSelectOptions(exchangeRates);
+  } else {
+    fetch(URL)
+      .then((response) => response.json())
+      .then((exchangeRates) => {
+        sessionStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
+        createSelectOptions(exchangeRates);
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    })
-    .catch((error) => {
-      console.log(error);
+  }
+}
+
+function createSelectOptions(exchangeRates) {
+  document.querySelectorAll('select').forEach((select) => {
+    Object.keys(exchangeRates).forEach((key) => {
+      select.insertAdjacentHTML(
+        'beforeend',
+        `<option value="${key}">${key} - ${exchangeRates[key]}</option>`
+      );
     });
-}
-
-function showLoadingMessage(element, message) {
-  element.textContent = message;
-}
-
-// Removes the UTC time zone offset (+0000) from the string
-// returned by the API (Mon, 02 Oct 2023 00:00:01 +0000) in
-// order to make the "last update" message more user-friendly.
-function simplifyUpdateTime(string) {
-  return string.slice(0, string.indexOf('+'));
+  });
 }
