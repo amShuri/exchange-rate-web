@@ -25,4 +25,8 @@ select > option {
   #loading-button {
     width: 100%;
   }
+
+  #result-container {
+    justify-content: center;
+  }
 }
