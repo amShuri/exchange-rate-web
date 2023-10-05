@@ -44,7 +44,7 @@ document.querySelector('#exchange-rates').addEventListener('change', (e) => {
            </tr>`
         );
 
-        $currencyUpdateTime.textContent = exchange.date;
+        $apiUpdateTime.textContent = exchange.date;
         hideElement('#loading-indicator');
       });
     })
