@@ -33,19 +33,17 @@
             <h2 class="fs-4 fw-normal m-0">Currency Exchange Rate</h2>
           </div>
         </header>
-
         <section class="bg-light rounded-3 p-4 mb-4">
           <h2>Currency Converter</h2>
 
           <div class="row mb-2">
             <div class="col">
-              <label for="amount-to-convert" class="form-label">Enter Amount</label>
+              <label for="conversion-amount" class="form-label">Enter Amount</label>
               <input
                 class="form-control py-2"
                 type="number"
-                id="amount-to-convert"
+                id="conversion-amount"
                 placeholder="100"
-                required
               />
             </div>
 
@@ -53,7 +51,6 @@
               <label for="currency-base" class="form-label">Convert From</label>
               <select class="form-select py-2" id="currency-base">
                 <option value="" disabled selected hidden>Select Currency</option>
-                <option value="USD">USD</option>
               </select>
             </div>
 
@@ -61,43 +58,54 @@
               <label for="currency-target" class="form-label">Convert To</label>
               <select class="form-select py-2" id="currency-target">
                 <option value="" disabled selected hidden>Select Currency</option>
-                <option value="USD">USD</option>
               </select>
             </div>
-          </div>
 
-          <div class="row">
-            <div class="col py-0 mb-2">
-              <p class="fs-5 m-0" id="conversion-result">0 EUR = 0 USD</p>
-              <p class="fst-italic form-text m-0">
-                Last update:
-                <time id="conversion-update-time">dd/mm/yyyy</time>
-              </p>
-            </div>
+            <div class="row">
+              <div class="col py-0 mb-2 d-flex align-items-center">
+                <p class="fs-5 m-0" id="result"></p>
+              </div>
 
-            <div class="col" id="button-container">
-              <button
-                class="btn btn-primary btn-lg"
-                id="convert-currency-btn"
-                type="button"
-              >
-                Convert
-              </button>
+              <div class="col d-flex justify-content-end">
+                <button class="btn btn-primary btn-lg" id="convert-button" type="button">
+                  Convert
+                </button>
+
+                <button
+                  class="btn btn-primary btn-lg visually-hidden"
+                  id="loading-button"
+                  type="button"
+                  disabled
+                >
+                  <span
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Converting...
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
-        <section class="bg-dark rounded-3 text-white p-4">
+        <section class="bg-dark rounded-3 text-white p-4 mb-4">
           <h2>Exchange Rates</h2>
 
-          <div class="row">
+          <div class="row d-flex align-items-center mw-350px">
             <div class="col">
-              <label class="visually-hidden" for="exchange-base-select"
+              <label class="visually-hidden" for="exchange-rates"
                 >Choose a currency from the list</label
               >
-              <select class="form-select py-2" id="exchange-base-select">
+              <select class="form-select py-2" id="exchange-rates">
                 <option value="" disabled selected hidden>Select Currency</option>
               </select>
+            </div>
+
+            <div class="col-2 p-0 m-0 visually-hidden" id="loading-indicator">
+              <div class="col spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </div>
           </div>
 
@@ -132,11 +140,11 @@
               </table>
             </div>
           </div>
-          <p class="fst-italic form-text text-white m-0">
-            Last update:
-            <time id="exchange-update-time">dd/mm/yyyy</time>
-          </p>
         </section>
+        <footer class="bg-light rounded-3 p-3 m-0">
+          Currency values updated on:
+          <time id="update-time"></time>
+        </footer>
       </div>
     </main>
     <script src="src/index.js"></script>

@@ -2,18 +2,13 @@
   padding: 0.5rem;
 }
 
-#button-container {
-  display: flex;
-  justify-content: end;
+.mw-350px {
+  max-width: 350px;
 }
 
 #table-container {
   overflow-y: auto;
-  max-height: 330px;
-}
-
-#exchange-base-select {
-  max-width: 300px;
+  max-height: 280px;
 }
 
 thead th {
@@ -26,7 +21,8 @@ thead th {
     display: block;
   }
 
-  #convert-currency-btn {
+  #convert-button,
+  #loading-button {
     width: 100%;
   }
 }
