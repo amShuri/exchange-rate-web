@@ -9,7 +9,9 @@ document.querySelector('#convert-button').addEventListener('click', () => {
   const conversionAmount = getValue('#conversion-amount');
   const $result = document.querySelector('#result');
 
-  // Need validations for this functionality to work properly
+  const hasErrors = validateField(currencyBase, currencyTarget, conversionAmount);
+  if (hasErrors) return;
+
   hideElement('#convert-button');
   showElement('#loading-button');
 
@@ -109,4 +111,35 @@ function createSelectOptions(currencyNames) {
       );
     });
   });
+}
+
+function validateField(base, target, amount) {
+  const errors = {
+    'currency-base': validateCurrency(base),
+    'currency-target': validateCurrency(target),
+    'conversion-amount': validateAmount(amount),
+  };
+
+  return handleErrors(errors);
+}
+
+function handleErrors(errors) {
+  let hasErrors = false;
+
+  Object.keys(errors).forEach((key) => {
+    const validationError = errors[key];
+    const $inputElement = document.querySelector(`#${key}`);
+    const $errorElement = document.querySelector(`#${key} + span`);
+
+    if (validationError) {
+      hasErrors = true;
+      $errorElement.textContent = validationError;
+      $inputElement.classList.add('border', 'border-danger');
+    } else {
+      $errorElement.textContent = '';
+      $inputElement.classList.remove('border', 'border-danger');
+    }
+  });
+
+  return hasErrors;
 }
