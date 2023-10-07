@@ -1,4 +1,5 @@
 const $apiUpdateTime = document.querySelector('#update-time');
+const apiUrl = 'https://api.frankfurter.app';
 
 document.addEventListener('DOMContentLoaded', populateSelectElements);
 
@@ -12,12 +13,15 @@ document.querySelector('#convert-button').addEventListener('click', () => {
   hideElement('#convert-button');
   showElement('#loading-button');
 
-  getCurrencyConversion(conversionAmount, currencyBase, currencyTarget)
-    .then((conversion) => {
-      $result.textContent = `${conversionAmount} ${currencyBase} = 
-      ${conversion.rates[currencyTarget]} ${currencyTarget}`;
+  getExchangeRates(currencyBase)
+    .then((exchange) => {
+      const targetRate = exchange.rates[currencyTarget];
+      const conversionResult = performConversion(conversionAmount, targetRate);
 
-      $apiUpdateTime.textContent = conversion.date;
+      $result.textContent = `${conversionAmount} ${currencyBase} = 
+      ${conversionResult} ${currencyTarget}`;
+
+      $apiUpdateTime.textContent = exchange.date;
       hideElement('#loading-button');
       showElement('#convert-button');
     })
@@ -26,14 +30,14 @@ document.querySelector('#convert-button').addEventListener('click', () => {
     });
 });
 
-document.querySelector('#exchange-rates').addEventListener('change', (e) => {
+document.querySelector('#exchange-rates').addEventListener('change', () => {
+  const currencyBase = getValue('#exchange-rates');
   const $tableBody = document.querySelector('tbody');
-  const exchangeBase = e.target.value;
 
   $tableBody.textContent = '';
   showElement('#loading-indicator');
 
-  getCurrencyExchange(exchangeBase)
+  getExchangeRates(currencyBase)
     .then((exchange) => {
       Object.keys(exchange.rates).forEach((key) => {
         $tableBody.insertAdjacentHTML(
@@ -53,20 +57,10 @@ document.querySelector('#exchange-rates').addEventListener('change', (e) => {
     });
 });
 
-function getCurrencyExchange(currencyBase) {
-  const URL = getApiUrl(`/latest?from=${currencyBase}`);
-  return fetch(URL).then((response) => response.json());
-}
-
-function getCurrencyConversion(conversionAmount, currencyBase, currencyTarget) {
-  const URL = getApiUrl(
-    `/latest?amount=${conversionAmount}&from=${currencyBase}&to=${currencyTarget}`
-  );
-  return fetch(URL).then((response) => response.json());
-}
-
-function getApiUrl(endpoint) {
-  return 'https://api.frankfurter.app' + endpoint;
+function getExchangeRates(currencyBase) {
+  //prettier-ignore
+  return fetch(apiUrl + `/latest?from=${currencyBase}`)
+    .then((response) => response.json());
 }
 
 function getValue($element) {
@@ -83,19 +77,22 @@ function hideElement($element) {
   $elementToHide.classList.add('visually-hidden');
 }
 
-function populateSelectElements() {
-  const URL = getApiUrl('/currencies');
-  const chachedExchangeRates = sessionStorage.getItem('exchangeRates');
+function performConversion(amount, targetRate) {
+  return amount * targetRate;
+}
 
-  if (chachedExchangeRates) {
-    const exchangeRates = JSON.parse(chachedExchangeRates);
-    createSelectOptions(exchangeRates);
+function populateSelectElements() {
+  const cachedData = sessionStorage.getItem('currencies');
+
+  if (cachedData) {
+    const currencies = JSON.parse(cachedData);
+    createSelectOptions(currencies);
   } else {
-    fetch(URL)
+    fetch(apiUrl + '/currencies')
       .then((response) => response.json())
-      .then((exchangeRates) => {
-        sessionStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
-        createSelectOptions(exchangeRates);
+      .then((currencies) => {
+        sessionStorage.setItem('currencies', JSON.stringify(currencies));
+        createSelectOptions(currencies);
       })
       .catch((error) => {
         console.log(error);
@@ -103,12 +100,12 @@ function populateSelectElements() {
   }
 }
 
-function createSelectOptions(exchangeRates) {
+function createSelectOptions(currencyNames) {
   document.querySelectorAll('select').forEach((select) => {
-    Object.keys(exchangeRates).forEach((key) => {
+    Object.keys(currencyNames).forEach((key) => {
       select.insertAdjacentHTML(
         'beforeend',
-        `<option value="${key}">${key} - ${exchangeRates[key]}</option>`
+        `<option value="${key}">${key} - ${currencyNames[key]}</option>`
       );
     });
   });
