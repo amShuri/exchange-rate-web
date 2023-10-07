@@ -38,27 +38,36 @@
 
           <div class="row mb-3">
             <div class="col">
-              <label for="conversion-amount" class="form-label">Enter Amount</label>
+              <label for="conversion-amount" class="form-label">
+                Enter Amount <span class="text-danger">*</span>
+              </label>
               <input
                 class="form-control py-2"
                 type="number"
                 id="conversion-amount"
                 placeholder="100"
               />
+              <span class="form-text fst-italic text-danger ms-1 error"></span>
             </div>
 
             <div class="col">
-              <label for="currency-base" class="form-label">Convert From</label>
+              <label for="currency-base" class="form-label">
+                Convert From <span class="text-danger">*</span>
+              </label>
               <select class="form-select py-2" id="currency-base">
                 <option value="" disabled selected hidden>Select Currency</option>
               </select>
+              <span class="form-text fst-italic text-danger ms-1 error"></span>
             </div>
 
             <div class="col">
-              <label for="currency-target" class="form-label">Convert To</label>
+              <label for="currency-target" class="form-label">
+                Convert To <span class="text-danger">*</span>
+              </label>
               <select class="form-select py-2" id="currency-target">
                 <option value="" disabled selected hidden>Select Currency</option>
               </select>
+              <span class="form-text fst-italic text-danger ms-1 error"></span>
             </div>
           </div>
 
@@ -150,5 +159,6 @@
       </footer>
     </div>
     <script src="src/index.js"></script>
+    <script src="src/validations.js"></script>
   </body>
 </html>
