@@ -8,6 +8,7 @@ document.querySelector('#convert-button').addEventListener('click', () => {
   const currencyTarget = getValue('#currency-target');
   const conversionAmount = getValue('#conversion-amount');
   const $result = document.querySelector('#result');
+  let conversionResult = 0;
 
   const hasErrors = validateField(currencyBase, currencyTarget, conversionAmount);
   if (hasErrors) return;
@@ -18,7 +19,15 @@ document.querySelector('#convert-button').addEventListener('click', () => {
   getExchangeRates(currencyBase)
     .then((exchange) => {
       const targetRate = exchange.rates[currencyTarget];
-      const conversionResult = performConversion(conversionAmount, targetRate);
+
+      // The `exchange` object doesn't have the base currency property,
+      // so the `performConversion` function throws an error when
+      // performing a conversion for identical currencies.
+      if (currencyBase == currencyTarget) {
+        conversionResult = conversionAmount;
+      } else {
+        conversionResult = performConversion(conversionAmount, targetRate);
+      }
 
       $result.textContent = `${conversionAmount} ${currencyBase} = 
       ${conversionResult} ${currencyTarget}`;
