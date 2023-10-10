@@ -93,33 +93,21 @@ function performConversion(amount, targetRate) {
 }
 
 function populateSelectElements() {
-  const cachedData = sessionStorage.getItem('currencies');
-
-  if (cachedData) {
-    const currencies = JSON.parse(cachedData);
-    createSelectOptions(currencies);
-  } else {
-    fetch(apiUrl + '/currencies')
-      .then((response) => response.json())
-      .then((currencies) => {
-        sessionStorage.setItem('currencies', JSON.stringify(currencies));
-        createSelectOptions(currencies);
-      })
-      .catch((error) => {
-        console.log(error);
+  fetch(apiUrl + '/currencies')
+    .then((response) => response.json())
+    .then((currencies) => {
+      document.querySelectorAll('select').forEach((select) => {
+        Object.keys(currencies).forEach((key) => {
+          select.insertAdjacentHTML(
+            'beforeend',
+            `<option value="${key}">${key} - ${currencies[key]}</option>`
+          );
+        });
       });
-  }
-}
-
-function createSelectOptions(currencyNames) {
-  document.querySelectorAll('select').forEach((select) => {
-    Object.keys(currencyNames).forEach((key) => {
-      select.insertAdjacentHTML(
-        'beforeend',
-        `<option value="${key}">${key} - ${currencyNames[key]}</option>`
-      );
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  });
 }
 
 function validateField(base, target, amount) {
