@@ -7,6 +7,10 @@
   max-height: 280px;
 }
 
+label {
+  cursor: pointer;
+}
+
 thead th {
   position: sticky;
   top: 0;
