@@ -47,7 +47,7 @@
                 id="conversion-amount"
                 placeholder="100"
               />
-              <span class="form-text fst-italic text-danger ms-1"></span>
+              <span class="form-text fst-italic text-danger"></span>
             </div>
 
             <div class="col">
@@ -57,7 +57,7 @@
               <select class="form-select py-2" id="currency-base">
                 <option value="" disabled selected hidden>Select Currency</option>
               </select>
-              <span class="form-text fst-italic text-danger ms-1"></span>
+              <span class="form-text fst-italic text-danger"></span>
             </div>
 
             <div class="col">
@@ -67,7 +67,7 @@
               <select class="form-select py-2" id="currency-target">
                 <option value="" disabled selected hidden>Select Currency</option>
               </select>
-              <span class="form-text fst-italic text-danger ms-1"></span>
+              <span class="form-text fst-italic text-danger"></span>
             </div>
           </div>
 
@@ -101,20 +101,14 @@
         <section class="bg-dark rounded-3 text-white p-4">
           <h2>Exchange Rates</h2>
 
-          <div class="row d-flex align-items-center" style="max-width: 350px">
+          <div class="row" style="max-width: 350px">
             <div class="col">
-              <label class="visually-hidden" for="exchange-rates"
-                >Choose a currency from the list</label
-              >
+              <label class="visually-hidden" for="exchange-rates">
+                Choose a currency from the list
+              </label>
               <select class="form-select py-2" id="exchange-rates">
                 <option value="" disabled selected hidden>Select Currency</option>
               </select>
-            </div>
-
-            <div class="col-2 visually-hidden" id="loading-indicator">
-              <div class="col spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
             </div>
           </div>
 
@@ -147,6 +141,18 @@
                   </tr>
                 </tbody>
               </table>
+
+              <div class="visually-hidden" id="loading-indicator">
+                <p class="placeholder-glow">
+                  <span class="placeholder col-12"></span>
+                </p>
+                <p class="placeholder-glow">
+                  <span class="placeholder col-12"></span>
+                </p>
+                <p class="placeholder-glow">
+                  <span class="placeholder col-12"></span>
+                </p>
+              </div>
             </div>
           </div>
         </section>
