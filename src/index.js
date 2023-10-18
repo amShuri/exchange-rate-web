@@ -1,4 +1,3 @@
-const $apiUpdateTime = document.querySelector('#update-time');
 const apiUrl = 'https://api.frankfurter.app';
 
 document.addEventListener('DOMContentLoaded', createCurrencyOptions);
