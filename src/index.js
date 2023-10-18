@@ -1,77 +1,97 @@
 const $apiUpdateTime = document.querySelector('#update-time');
 const apiUrl = 'https://api.frankfurter.app';
 
-document.addEventListener('DOMContentLoaded', populateSelectElements);
+document.addEventListener('DOMContentLoaded', createCurrencyOptions);
+
+document.querySelector('#exchange-rates').addEventListener('change', updateExchangeTable);
 
 document.querySelector('#convert-button').addEventListener('click', () => {
   const currencyBase = getValue('#currency-base');
   const currencyTarget = getValue('#currency-target');
   const conversionAmount = getValue('#conversion-amount');
-  const $result = document.querySelector('#result');
-  let conversionResult = 0;
 
-  const hasErrors = validateField(currencyBase, currencyTarget, conversionAmount);
+  const hasErrors = validateInputValue(currencyBase, currencyTarget, conversionAmount);
   if (hasErrors) return;
 
   hideElement('#convert-button');
   showElement('#loading-button');
 
-  getExchangeRates(currencyBase)
-    .then((exchange) => {
-      const targetRate = exchange.rates[currencyTarget];
-
-      // The `exchange` object doesn't have the base currency property,
-      // so the `performConversion` function throws an error when
-      // performing a conversion for identical currencies.
-      if (currencyBase == currencyTarget) {
-        conversionResult = conversionAmount;
-      } else {
-        conversionResult = performConversion(conversionAmount, targetRate);
-      }
-
-      $result.textContent = `${conversionAmount} ${currencyBase} = 
-      ${conversionResult} ${currencyTarget}`;
-
-      $apiUpdateTime.textContent = exchange.date;
+  getConversionResult(currencyBase, currencyTarget, conversionAmount)
+    .then((data) => {
+      showConversionResult(data, currencyBase, currencyTarget, conversionAmount);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => {
       hideElement('#loading-button');
       showElement('#convert-button');
-    })
-    .catch((error) => {
-      console.log(error);
     });
 });
 
-document.querySelector('#exchange-rates').addEventListener('change', () => {
-  const currencyBase = getValue('#exchange-rates');
-  const $tableBody = document.querySelector('tbody');
+function getConversionResult(currencyBase, currencyTarget, conversionAmount) {
+  return getExchangeRates(currencyBase).then((data) => {
+    const targetRate = data.rates[currencyTarget];
+    const result = conversionAmount * targetRate;
+    return {
+      result: Number(result.toFixed(2)),
+      update: data.date,
+    };
+  });
+}
 
-  $tableBody.textContent = '';
+function showConversionResult(data, currencyBase, currencyTarget, conversionAmount) {
+  // prettier-ignore
+  updateTextContent('#result', `${conversionAmount} ${currencyBase} = ${data.result} ${currencyTarget}`);
+  updateTextContent('#update-time', data.update);
+}
+
+function updateExchangeTable() {
+  const currencyBase = getValue('#exchange-rates');
+
+  updateTextContent('tbody', '');
   showElement('#loading-indicator');
 
   getExchangeRates(currencyBase)
-    .then((exchange) => {
-      Object.keys(exchange.rates).forEach((key) => {
-        $tableBody.insertAdjacentHTML(
+    .then((data) => {
+      Object.keys(data.rates).forEach((key) => {
+        document.querySelector('tbody').insertAdjacentHTML(
           'beforeend',
           `<tr>
             <th scope="row">${key}</th>
-            <td>${exchange.rates[key]}</td>
+            <td>${data.rates[key]}</td>
            </tr>`
         );
+      });
+      updateTextContent('#update-time', data.date);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => {
+      hideElement('#loading-indicator');
+    });
+}
 
-        $apiUpdateTime.textContent = exchange.date;
-        hideElement('#loading-indicator');
+function createCurrencyOptions() {
+  getCurrencies()
+    .then((data) => {
+      document.querySelectorAll('select').forEach((select) => {
+        Object.keys(data).forEach((key) => {
+          select.insertAdjacentHTML(
+            'beforeend',
+            `<option value="${key}">${key} - ${data[key]}</option>`
+          );
+        });
       });
     })
-    .catch((error) => {
-      console.log(error);
-    });
-});
+    .catch((err) => console.log(err));
+}
 
 function getExchangeRates(currencyBase) {
-  //prettier-ignore
-  return fetch(apiUrl + `/latest?from=${currencyBase}`)
-    .then((response) => response.json());
+  return fetch(apiUrl + `/latest?from=${currencyBase}`).then((response) =>
+    response.json()
+  );
+}
+
+function getCurrencies() {
+  return fetch(apiUrl + '/currencies').then((response) => response.json());
 }
 
 function getValue($element) {
@@ -88,35 +108,17 @@ function hideElement($element) {
   $elementToHide.classList.add('visually-hidden');
 }
 
-function performConversion(amount, targetRate) {
-  return amount * targetRate;
+function updateTextContent($element, text) {
+  const $elementToUpdate = document.querySelector($element);
+  $elementToUpdate.textContent = text;
 }
 
-function populateSelectElements() {
-  fetch(apiUrl + '/currencies')
-    .then((response) => response.json())
-    .then((currencies) => {
-      document.querySelectorAll('select').forEach((select) => {
-        Object.keys(currencies).forEach((key) => {
-          select.insertAdjacentHTML(
-            'beforeend',
-            `<option value="${key}">${key} - ${currencies[key]}</option>`
-          );
-        });
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function validateField(base, target, amount) {
+function validateInputValue(base, target, amount) {
   const errors = {
-    'currency-base': validateCurrency(base),
-    'currency-target': validateCurrency(target),
+    'currency-base': validateCurrency(base) || validateIdentical(base, target),
+    'currency-target': validateCurrency(target) || validateIdentical(base, target),
     'conversion-amount': validateAmount(amount),
   };
-
   return handleErrors(errors);
 }
 
@@ -137,6 +139,5 @@ function handleErrors(errors) {
       $inputElement.classList.remove('border', 'border-danger');
     }
   });
-
   return hasErrors;
 }

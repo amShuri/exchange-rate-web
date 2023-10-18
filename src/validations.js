@@ -4,7 +4,7 @@ function validateAmount(amount) {
   }
 
   if (amount <= 0) {
-    return 'The amount must be at least 1.';
+    return 'The amount must be a positive number.';
   }
 
   if (amount.length > 15) {
@@ -19,5 +19,11 @@ function validateAmount(amount) {
 function validateCurrency(currency) {
   if (currency == '') {
     return 'Select a currency to proceed.';
+  }
+}
+
+function validateIdentical(base, target) {
+  if (base == target) {
+    return 'Currencies cannot be identical.';
   }
 }
