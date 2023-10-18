@@ -44,10 +44,9 @@ describe('Performs currency conversions', () => {
     cy.get('#currency-target').select(2);
     cy.get('#convert-button').click();
     cy.get('#result').should(($result) => {
-      // Cypress is returning the result with a line break and
-      // a lot of whitespace so, before checking if the result
-      // matches the pattern, we remove all the whitespace from it
-      // and match it against a regex pattern with no whitespace.
+      // Cypress is returning the result with a line break and a lot of whitespace,
+      // so before checking if the result matches the pattern, we remove all the whitespace
+      // from it and match it against a regex pattern with no whitespace.
       let result = $result.text().replace(/\s+/g, '');
       expect(result).to.match(resultPattern);
     });
@@ -63,10 +62,21 @@ describe('Performs currency conversions', () => {
     cy.get('#convert-button').click();
     cy.get('#conversion-amount + span').should(
       'contain',
-      'The amount must be at least 1.'
+      'The amount must be a positive number.'
     );
     cy.get('#currency-base + span').should('contain', 'Select a currency to proceed.');
     cy.get('#currency-target + span').should('contain', 'Select a currency to proceed.');
+  });
+
+  it('throws an error when providing identical currencies', () => {
+    cy.get('#currency-base').select(2);
+    cy.get('#currency-target').select(2);
+    cy.get('#convert-button').click();
+    cy.get('#currency-base + span').should('contain', 'Currencies cannot be identical.');
+    cy.get('#currency-target + span').should(
+      'contain',
+      'Currencies cannot be identical.'
+    );
   });
 });
 
