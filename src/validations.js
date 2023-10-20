@@ -1,5 +1,5 @@
 function validateAmount(amount) {
-  if (amount == '') {
+  if (!amount) {
     return 'The amount cannot be empty.';
   }
 
@@ -17,13 +17,13 @@ function validateAmount(amount) {
 }
 
 function validateCurrency(currency) {
-  if (currency == '') {
+  if (!currency) {
     return 'Select a currency to proceed.';
   }
 }
 
 function validateIdentical(base, target) {
-  if (base == target) {
+  if (base === target) {
     return 'Currencies cannot be identical.';
   }
 }
